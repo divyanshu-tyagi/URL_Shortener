@@ -1,0 +1,75 @@
+version: "3.9"
+
+services:
+
+  app:
+    build: .
+    container_name: url-shortener-app
+    ports:
+      - "8085:8085"
+    environment:
+      DATABASE_URL:   jdbc:postgresql://postgres:5432/urlshortener
+      DB_USERNAME:    postgres
+      DB_PASSWORD:    postgres
+      REDIS_HOST:     redis
+      REDIS_PORT:     6379
+      BASE_URL:       http://localhost:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: url-shortener-db
+    environment:
+      POSTGRES_DB:       urlshortener
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: url-shortener-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Prometheus scrapes /actuator/prometheus every 15s
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: url-shortener-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - app
+
+  # Grafana dashboard at localhost:3000 (admin/admin)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: url-shortener-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    depends_on:
+      - prometheus
+
+volumes:
+  pgdata:
