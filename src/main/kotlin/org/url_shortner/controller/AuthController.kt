@@ -11,21 +11,17 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.url_shortner.dto.ApiKeyResponse
 import org.url_shortner.dto.CreateApiKeyRequest
-import org.url_shortner.service.AnalyticsService
 import org.url_shortner.service.ApiKeyService
 
 @RestController
 @RequestMapping("/api/auth")
-//@Tag(name = "Auth", description = "API key management")
+
 class AuthController(
     private val apiKeyService: ApiKeyService
 ) {
 
     @PostMapping("/keys")
-//    @Operation(
-//        summary = "Generate a new API key",
-//        description = "The raw API key is returned ONCE. Store it securely — it cannot be retrieved again."
-//    )
+
     fun createKey(
         @Valid @RequestBody request: CreateApiKeyRequest
     ): ResponseEntity<ApiKeyResponse> {

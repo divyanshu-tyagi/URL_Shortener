@@ -13,14 +13,12 @@ import java.net.URI
 
 
 @RestController
-//@Tag(name = "Redirect", description = "Public redirect endpoint")
 class RedirectController(
     private val urlService: UrlService,
     private val clickTrackingService: ClickTrackingService
 ) {
 
     @GetMapping("/{shortCode}")
-//    @Operation(summary = "Redirect to original URL")
     fun redirect(
         @PathVariable shortCode: String,
         request: HttpServletRequest

@@ -17,14 +17,12 @@ import org.url_shortner.service.UrlService
 
 @RestController
 @RequestMapping("/api/urls")
-//@Tag(name = "URLs", description = "Create and manage short URLs")
 class UrlController(
     private val urlService: UrlService,
     private val analyticsService: AnalyticsService
 ) {
 
     @PostMapping
-//    @Operation(summary = "Shorten a URL")
     fun shorten(
         @Valid @RequestBody request: ShortenRequest,
         httpRequest: HttpServletRequest
@@ -36,14 +34,12 @@ class UrlController(
     }
 
     @GetMapping
-//    @Operation(summary = "List all URLs created with this API key")
     fun list(httpRequest: HttpServletRequest): ResponseEntity<List<UrlInfoResponse>> {
         val apiKey = httpRequest.resolvedApiKey()
         return ResponseEntity.ok(urlService.listByApiKey(apiKey.id))
     }
 
     @DeleteMapping("/{shortCode}")
-//    @Operation(summary = "Deactivate a short URL")
     fun delete(
         @PathVariable shortCode: String,
         httpRequest: HttpServletRequest
@@ -54,7 +50,6 @@ class UrlController(
     }
 
     @GetMapping("/{shortCode}/analytics")
-//    @Operation(summary = "Get click analytics for a short URL")
     fun analytics(
         @PathVariable shortCode: String
     ): ResponseEntity<AnalyticsResponse> {
